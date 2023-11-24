@@ -27,6 +27,32 @@ async function run() {
         // await client.connect();
 
         // Collections 
+        const userCollection = client.db('fnfDB').collection('users');
+
+        // User Related 
+        // view all users
+        app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result)
+        });
+        // Add a new user
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const query = { email: user.email }
+            const existingUser = await userCollection.findOne(query);
+            if (existingUser) {
+                return res.send({ message: 'user already exists', insertedId: null })
+            }
+            const result = await userCollection.insertOne(user)
+            res.send(result)
+        });
+        // delete users
+        app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await userCollection.deleteOne(query)
+            res.send(result)
+        });
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
