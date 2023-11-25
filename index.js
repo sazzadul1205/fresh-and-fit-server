@@ -94,20 +94,20 @@ async function run() {
         // booking Related 
         // view all bookings
         app.get('/bookings', async (req, res) => {
-            const result = await trainerCollection.find().toArray();
+            const result = await bookingCollection.find().toArray();
             res.send(result)
         });
         // view a booking
         app.get('/bookings/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
-            const result = await trainerCollection.findOne(query)
+            const result = await bookingCollection.findOne(query)
             res.send(result)
         });
         // add new booking
         app.post('/bookings', async (req, res) => {
             const request = req.body;
-            const result = await trainerCollection.insertOne(request);
+            const result = await bookingCollection.insertOne(request);
             res.send(result)
         });
 
