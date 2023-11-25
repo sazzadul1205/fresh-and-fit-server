@@ -31,6 +31,7 @@ async function run() {
         const galleryCollection = client.db('fnfDB').collection('gallery');
         const trainerCollection = client.db('fnfDB').collection('trainers');
         const nTrainerRequestCollection = client.db('fnfDB').collection('nTrainerRequest');
+        const bookingCollection = client.db('fnfDB').collection('bookings');
 
         // User Related 
         // view all users
@@ -78,7 +79,6 @@ async function run() {
             const result = await galleryCollection.find().toArray();
             res.send(result)
         });
-
         // new Trainer Request Relate
         app.get('/nTrainerRequest', async (req, res) => {
             const result = await nTrainerRequestCollection.find().toArray();
@@ -91,6 +91,25 @@ async function run() {
             res.send(result)
         });
 
+        // booking Related 
+        // view all bookings
+        app.get('/bookings', async (req, res) => {
+            const result = await trainerCollection.find().toArray();
+            res.send(result)
+        });
+        // view a booking
+        app.get('/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await trainerCollection.findOne(query)
+            res.send(result)
+        });
+        // add new booking
+        app.post('/bookings', async (req, res) => {
+            const request = req.body;
+            const result = await trainerCollection.insertOne(request);
+            res.send(result)
+        });
 
 
         // Send a ping to confirm a successful connection
