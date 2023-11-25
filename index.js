@@ -24,12 +24,13 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        await client.connect();
 
         // Collections 
         const userCollection = client.db('fnfDB').collection('users');
         const galleryCollection = client.db('fnfDB').collection('gallery');
         const trainerCollection = client.db('fnfDB').collection('trainers');
+        const nTrainerRequestCollection = client.db('fnfDB').collection('nTrainerRequest');
 
         // User Related 
         // view all users
@@ -74,9 +75,20 @@ async function run() {
         // Gallery Related
         // view all images with pagination
         app.get('/gallery', async (req, res) => {
-            const { limit = 12, offset = 0 } = req.query;
-            const result = await galleryCollection.find().skip(Number(offset)).limit(Number(limit)).toArray();
-            res.send({ images: result, prevOffset: offset });
+            const result = await galleryCollection.find().toArray();
+            res.send(result)
+        });
+
+        // new Trainer Request Relate
+        app.get('/nTrainerRequest', async (req, res) => {
+            const result = await nTrainerRequestCollection.find().toArray();
+            res.send(result)
+        });
+        // add new menu item
+        app.post('/nTrainerRequest', async (req, res) => {
+            const request = req.body;
+            const result = await nTrainerRequestCollection.insertOne(request);
+            res.send(result)
         });
 
 
