@@ -28,10 +28,11 @@ async function run() {
 
         // Collections 
         const userCollection = client.db('fnfDB').collection('users');
+        const galleryCollection = client.db('fnfDB').collection('gallery');
 
         // User Related 
         // view all users
-        app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
+        app.get('/users', async (req, res) => {
             const result = await userCollection.find().toArray();
             res.send(result)
         });
@@ -47,12 +48,23 @@ async function run() {
             res.send(result)
         });
         // delete users
-        app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
+        app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await userCollection.deleteOne(query)
             res.send(result)
         });
+
+
+        // Gallery Related
+        // view all images with pagination
+        app.get('/gallery', async (req, res) => {
+            const { limit = 12, offset = 0 } = req.query;
+            const result = await galleryCollection.find().skip(Number(offset)).limit(Number(limit)).toArray();
+            res.send({ images: result, prevOffset: offset });
+        });
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
