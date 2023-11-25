@@ -29,6 +29,7 @@ async function run() {
         // Collections 
         const userCollection = client.db('fnfDB').collection('users');
         const galleryCollection = client.db('fnfDB').collection('gallery');
+        const trainerCollection = client.db('fnfDB').collection('trainers');
 
         // User Related 
         // view all users
@@ -52,6 +53,20 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await userCollection.deleteOne(query)
+            res.send(result)
+        });
+
+        // trainers Related 
+        // view all trainers
+        app.get('/trainers', async (req, res) => {
+            const result = await trainerCollection.find().toArray();
+            res.send(result)
+        });
+        // view a Trainer
+        app.get('/trainers/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await trainerCollection.findOne(query)
             res.send(result)
         });
 
