@@ -35,6 +35,7 @@ async function run() {
         const classCollection = client.db('fnfDB').collection('classes');
         const formCollection = client.db('fnfDB').collection('forms');
         const newsLetterCollection = client.db('fnfDB').collection('newsLetter');
+        const payedCollection = client.db('fnfDB').collection('payed');
 
         // JWT Related API verification
         app.post('/jwt', async (req, res) => {
@@ -95,6 +96,18 @@ async function run() {
             const result = await userCollection.deleteOne(query)
             res.send(result)
         });
+        // Update user
+        app.patch('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    paymentStatus: 'paid'
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
 
         // trainers Related 
         // view all trainers
@@ -109,6 +122,18 @@ async function run() {
             const result = await trainerCollection.findOne(query)
             res.send(result)
         });
+        // Update trainer
+        app.patch('/trainers/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const updatedDoc = {
+                $set: {
+                    paymentStatus: 'paid'
+                }
+            }
+            const result = await trainerCollection.updateOne(filter, updatedDoc)
+            res.send(result)
+        })
 
         // Gallery Related
         // view all images with pagination
@@ -210,6 +235,19 @@ async function run() {
         app.post('/newsLetter', async (req, res) => {
             const request = req.body;
             const result = await newsLetterCollection.insertOne(request);
+            res.send(result)
+        });
+
+        //newsLetter Related API
+        // view all classes
+        app.get('/payed', async (req, res) => {
+            const result = await payedCollection.find().toArray();
+            res.send(result)
+        });
+        // add new form
+        app.post('/payed', async (req, res) => {
+            const request = req.body;
+            const result = await payedCollection.insertOne(request);
             res.send(result)
         });
 
