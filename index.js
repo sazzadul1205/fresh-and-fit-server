@@ -82,6 +82,12 @@ async function run() {
             const result = await userCollection.findOne(query);
             res.send(result);
         });
+        app.post('/users', async (req, res) => {
+            const request = req.body;
+            const result = await userCollection.insertOne(request);
+            res.send(result)
+        });
+
         // delete users
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
@@ -89,7 +95,7 @@ async function run() {
             const result = await userCollection.deleteOne(query)
             res.send(result)
         });
-
+        
         // trainers Related 
         // view all trainers
         app.get('/trainers', async (req, res) => {
