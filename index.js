@@ -76,22 +76,11 @@ async function run() {
             const result = await userCollection.find().toArray();
             res.send(result)
         });
-        app.get('/trainers/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await trainerCollection.findOne(query)
-            res.send(result)
-        });
-        // Add a new user
-        app.post('/users', async (req, res) => {
-            const user = req.body;
-            const query = { email: user.email }
-            const existingUser = await userCollection.findOne(query);
-            if (existingUser) {
-                return res.send({ message: 'user already exists', insertedId: null })
-            }
-            const result = await userCollection.insertOne(user)
-            res.send(result)
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await userCollection.findOne(query);
+            res.send(result);
         });
         // delete users
         app.delete('/users/:id', async (req, res) => {
@@ -174,7 +163,7 @@ async function run() {
             res.send(result)
         });
 
-        // classes Related 
+        // form Related 
         // view all classes
         app.get('/forms', async (req, res) => {
             const page = parseInt(req.query.page)
@@ -185,10 +174,13 @@ async function run() {
                 .toArray();
             res.send(result);
         });
+
         app.get('/formsCount', async (req, res) => {
             const count = await formCollection.estimatedDocumentCount()
+            console.log(count);
             res.send({ count })
         });
+
         // view a booking
         app.get('/forms/:id', async (req, res) => {
             const id = req.params.id;
