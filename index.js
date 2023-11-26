@@ -97,17 +97,18 @@ async function run() {
             res.send(result)
         });
         // Update user
-        app.patch('/users/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: new ObjectId(id) }
+        app.patch('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
             const updatedDoc = {
                 $set: {
-                    paymentStatus: 'paid'
+                    role: 'trainer'
                 }
-            }
-            const result = await userCollection.updateOne(filter, updatedDoc)
-            res.send(result)
-        })
+            };
+            const result = await userCollection.updateOne(query, updatedDoc);
+            res.send(result);
+        });
+
 
         // trainers Related 
         // view all trainers
@@ -122,6 +123,12 @@ async function run() {
             const result = await trainerCollection.findOne(query)
             res.send(result)
         });
+        // add new trainer item
+        app.post('/trainers', async (req, res) => {
+            const request = req.body;
+            const result = await trainerCollection.insertOne(request);
+            res.send(result)
+        });
         // Update trainer
         app.patch('/trainers/:id', async (req, res) => {
             const id = req.params.id;
@@ -134,6 +141,7 @@ async function run() {
             const result = await trainerCollection.updateOne(filter, updatedDoc)
             res.send(result)
         })
+
 
         // Gallery Related
         // view all images with pagination
@@ -152,6 +160,13 @@ async function run() {
         app.post('/nTrainerRequest', async (req, res) => {
             const request = req.body;
             const result = await nTrainerRequestCollection.insertOne(request);
+            res.send(result)
+        });
+        // delete trainerReq
+        app.delete('/nTrainerRequest/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await nTrainerRequestCollection.deleteOne(query)
             res.send(result)
         });
 
