@@ -34,6 +34,7 @@ async function run() {
         const bookingCollection = client.db('fnfDB').collection('bookings');
         const classCollection = client.db('fnfDB').collection('classes');
         const formCollection = client.db('fnfDB').collection('forms');
+        const newsLetterCollection = client.db('fnfDB').collection('newsLetter');
 
         // JWT Related API verification
         app.post('/jwt', async (req, res) => {
@@ -87,7 +88,6 @@ async function run() {
             const result = await userCollection.insertOne(request);
             res.send(result)
         });
-
         // delete users
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
@@ -95,7 +95,7 @@ async function run() {
             const result = await userCollection.deleteOne(query)
             res.send(result)
         });
-        
+
         // trainers Related 
         // view all trainers
         app.get('/trainers', async (req, res) => {
@@ -110,19 +110,20 @@ async function run() {
             res.send(result)
         });
 
-
         // Gallery Related
         // view all images with pagination
         app.get('/gallery', async (req, res) => {
             const result = await galleryCollection.find().toArray();
             res.send(result)
         });
-        // new Trainer Request Relate
+
+        // Trainer Request Relate API
+        // view all newTrainer Req
         app.get('/nTrainerRequest', async (req, res) => {
             const result = await nTrainerRequestCollection.find().toArray();
             res.send(result)
         });
-        // add new menu item
+        // add new trainerReq item
         app.post('/nTrainerRequest', async (req, res) => {
             const request = req.body;
             const result = await nTrainerRequestCollection.insertOne(request);
@@ -149,28 +150,28 @@ async function run() {
             res.send(result)
         });
 
-        // classes Related 
+        // classes Related API
         // view all classes
         app.get('/classes', async (req, res) => {
             const result = await classCollection.find().toArray();
             res.send(result)
         });
-        // view a booking
+        // view a class
         app.get('/classes/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await classCollection.findOne(query)
             res.send(result)
         });
-        // add new booking
+        // add new class
         app.post('/classes', async (req, res) => {
             const request = req.body;
             const result = await classCollection.insertOne(request);
             res.send(result)
         });
 
-        // form Related 
-        // view all classes
+        // form Related API
+        // view all forms
         app.get('/forms', async (req, res) => {
             const page = parseInt(req.query.page)
             const size = parseInt(req.query.size)
@@ -180,24 +181,35 @@ async function run() {
                 .toArray();
             res.send(result);
         });
-
         app.get('/formsCount', async (req, res) => {
             const count = await formCollection.estimatedDocumentCount()
             console.log(count);
             res.send({ count })
         });
-
-        // view a booking
+        // view a form
         app.get('/forms/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await formCollection.findOne(query)
             res.send(result)
         });
-        // add new booking
+        // add new form
         app.post('/forms', async (req, res) => {
             const request = req.body;
             const result = await formCollection.insertOne(request);
+            res.send(result)
+        });
+
+        //newsLetter Related API
+        // view all classes
+        app.get('/newsLetter', async (req, res) => {
+            const result = await newsLetterCollection.find().toArray();
+            res.send(result)
+        });
+        // add new form
+        app.post('/newsLetter', async (req, res) => {
+            const request = req.body;
+            const result = await newsLetterCollection.insertOne(request);
             res.send(result)
         });
 
