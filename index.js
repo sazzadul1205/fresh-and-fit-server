@@ -33,6 +33,7 @@ async function run() {
         const nTrainerRequestCollection = client.db('fnfDB').collection('nTrainerRequest');
         const bookingCollection = client.db('fnfDB').collection('bookings');
         const classCollection = client.db('fnfDB').collection('classes');
+        const formCollection = client.db('fnfDB').collection('forms');
 
         // User Related 
         // view all users
@@ -129,6 +130,36 @@ async function run() {
         app.post('/classes', async (req, res) => {
             const request = req.body;
             const result = await classCollection.insertOne(request);
+            res.send(result)
+        });
+
+        // classes Related 
+        // view all classes
+        app.get('/forms', async (req, res) => {
+            const page = parseInt(req.query.page)
+            const size = parseInt(req.query.size)
+            const result = await formCollection.find()
+                .skip(page * size)
+                .limit(size)
+                .toArray();
+            res.send(result);
+        });
+        // view all classes pagenation
+        app.get('/formsCount', async (req, res) => {
+            const count = await formCollection.estimatedDocumentCount()
+            res.send({ count })
+        });
+        // view a booking
+        app.get('/forms/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await formCollection.findOne(query)
+            res.send(result)
+        });
+        // add new booking
+        app.post('/forms', async (req, res) => {
+            const request = req.body;
+            const result = await formCollection.insertOne(request);
             res.send(result)
         });
 
