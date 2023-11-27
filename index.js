@@ -212,16 +212,18 @@ async function run() {
         // booking Related 
         // view all bookings
         app.get('/bookings', async (req, res) => {
-            const { trainerEmail } = req.query;
+            const { trainerEmail, bookerEmail } = req.query;
+            // Create a query object to filter based on provided parameters
+            const query = {};
             if (trainerEmail) {
-                // If trainerEmail is provided, find bookings for that specific trainer
-                const result = await bookingCollection.find({ trainerEmail }).toArray();
-                res.send(result);
-            } else {
-                // If trainerEmail is not provided, find all bookings
-                const result = await bookingCollection.find().toArray();
-                res.send(result);
+                query.trainerEmail = trainerEmail;
             }
+            if (bookerEmail) {
+                query.bookerEmail = bookerEmail;
+            }
+            // Find bookings based on the constructed query
+            const result = await bookingCollection.find(query).toArray();
+            res.send(result);
         });
         app.get('/bookingsCount', async (req, res) => {
             const result = await bookingCollection.estimatedDocumentCount();
