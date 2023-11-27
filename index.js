@@ -102,14 +102,17 @@ async function run() {
         // User Related 
         // view all users
         app.get('/users', async (req, res) => {
-            const result = await userCollection.find().toArray();
-            res.send(result)
-        });
-        app.get('/users/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
-            const result = await userCollection.findOne(query);
-            res.send(result);
+            const { email } = req.query;
+            if (email) {
+                // If email is provided, find a specific user by email
+                const query = { email };
+                const result = await userCollection.findOne(query);
+                res.send(result);
+            } else {
+                // If email is not provided, find all users
+                const result = await userCollection.find().toArray();
+                res.send(result);
+            }
         });
         app.post('/users', async (req, res) => {
             const request = req.body;
@@ -140,8 +143,17 @@ async function run() {
         // trainers Related 
         // view all trainers
         app.get('/trainers', async (req, res) => {
-            const result = await trainerCollection.find().toArray();
-            res.send(result)
+            const { email } = req.query;
+            if (email) {
+                // If email is provided, find a specific trainer by email
+                const query = { email };
+                const result = await trainerCollection.findOne(query);
+                res.send(result);
+            } else {
+                // If email is not provided, find all trainers
+                const result = await trainerCollection.find().toArray();
+                res.send(result);
+            }
         });
         // view a Trainer
         app.get('/trainers/:id', async (req, res) => {
@@ -200,14 +212,21 @@ async function run() {
         // booking Related 
         // view all bookings
         app.get('/bookings', async (req, res) => {
-            const result = await bookingCollection.find().toArray();
-            res.send(result)
+            const { trainerEmail } = req.query;
+            if (trainerEmail) {
+                // If trainerEmail is provided, find bookings for that specific trainer
+                const result = await bookingCollection.find({ trainerEmail }).toArray();
+                res.send(result);
+            } else {
+                // If trainerEmail is not provided, find all bookings
+                const result = await bookingCollection.find().toArray();
+                res.send(result);
+            }
         });
         app.get('/bookingsCount', async (req, res) => {
             const result = await bookingCollection.estimatedDocumentCount();
-            res.send({result})
+            res.send({ result })
         });
-
         // view a booking
         app.get('/bookings/:id', async (req, res) => {
             const id = req.params.id;
@@ -280,7 +299,7 @@ async function run() {
         });
         app.get('/newsLetterCount', async (req, res) => {
             const result = await newsLetterCollection.estimatedDocumentCount();
-            res.send({result})
+            res.send({ result })
         });
 
         // add new subscribers
