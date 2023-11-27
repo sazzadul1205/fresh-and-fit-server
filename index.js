@@ -72,6 +72,33 @@ async function run() {
             next();
         }
 
+        // Admin Call
+        app.get('/adminBalances', async (req, res) => {
+            const trainerPayed = await payedCollection.aggregate([
+                {
+                    $group: {
+                        _id: null,
+                        totalPayed: { $sum: '$paymentAmount' }
+                    }
+                }
+            ]).toArray();;
+            const trainerPayedAmount = trainerPayed.length > 0 ? trainerPayed[0].totalPayed : 0;
+
+            const balance = await bookingCollection.aggregate([
+                {
+                    $group: {
+                        _id: null,
+                        totalBalance: { $sum: '$price' }
+                    }
+                }
+            ]).toArray();;
+            const FullBalance = balance.length > 0 ? balance[0].totalBalance : 0;
+            res.send({
+                trainerPayedAmount,
+                FullBalance
+            })
+        });
+
         // User Related 
         // view all users
         app.get('/users', async (req, res) => {
@@ -176,6 +203,11 @@ async function run() {
             const result = await bookingCollection.find().toArray();
             res.send(result)
         });
+        app.get('/bookingsCount', async (req, res) => {
+            const result = await bookingCollection.estimatedDocumentCount();
+            res.send({result})
+        });
+
         // view a booking
         app.get('/bookings/:id', async (req, res) => {
             const id = req.params.id;
@@ -241,17 +273,23 @@ async function run() {
         });
 
         //newsLetter Related API
-        // view all classes
+        // view all newsLetter subscribers
         app.get('/newsLetter', async (req, res) => {
             const result = await newsLetterCollection.find().toArray();
             res.send(result)
         });
-        // add new form
+        app.get('/newsLetterCount', async (req, res) => {
+            const result = await newsLetterCollection.estimatedDocumentCount();
+            res.send({result})
+        });
+
+        // add new subscribers
         app.post('/newsLetter', async (req, res) => {
             const request = req.body;
             const result = await newsLetterCollection.insertOne(request);
             res.send(result)
         });
+
 
         //newsLetter Related API
         // view all classes
