@@ -36,6 +36,7 @@ async function run() {
         const formCollection = client.db('fnfDB').collection('forms');
         const newsLetterCollection = client.db('fnfDB').collection('newsLetter');
         const payedCollection = client.db('fnfDB').collection('payed');
+        const testimonialsCollection = client.db('fnfDB').collection('testimonials');
 
         // JWT Related API verification
         app.post('/jwt', async (req, res) => {
@@ -322,6 +323,19 @@ async function run() {
         app.post('/payed', async (req, res) => {
             const request = req.body;
             const result = await payedCollection.insertOne(request);
+            res.send(result)
+        });
+
+        //testimonials Related API
+        // view all testimonials
+        app.get('/testimonials', async (req, res) => {
+            const result = await testimonialsCollection.find().toArray();
+            res.send(result)
+        });
+        // add new form
+        app.post('/testimonials', async (req, res) => {
+            const request = req.body;
+            const result = await testimonialsCollection.insertOne(request);
             res.send(result)
         });
 
