@@ -114,6 +114,22 @@ async function run() {
                 res.send(result);
             }
         });
+        // check if the user is admin
+        app.get('/users/admin/:email', verifyToken, async (req, res) => {
+            const email = req.params.email
+
+            if (email !== req.decoded.email) {
+                return res.status(403).send({ message: 'Forbidden Access' })
+            }
+
+            const query = { email: email }
+            const user = await userCollection.findOne(query)
+            let admin = false;
+            if (user) {
+                admin = user?.role === 'admin'
+            }
+            res.send({ admin })
+        });
         app.post('/users', async (req, res) => {
             const request = req.body;
             const result = await userCollection.insertOne(request);
@@ -163,7 +179,7 @@ async function run() {
             res.send(result)
         });
         // add new trainer item
-        app.post('/trainers',verifyToken, verifyAdmin, async (req, res) => {
+        app.post('/trainers', verifyToken, verifyAdmin, async (req, res) => {
             const request = req.body;
             const result = await trainerCollection.insertOne(request);
             res.send(result)
@@ -280,7 +296,7 @@ async function run() {
             res.send(result)
         });
         // add new class
-        app.post('/classes',verifyToken, async (req, res) => {
+        app.post('/classes', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await classCollection.insertOne(request);
             res.send(result)
