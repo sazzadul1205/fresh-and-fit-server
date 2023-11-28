@@ -247,8 +247,18 @@ async function run() {
         // classes Related API
         // view all classes
         app.get('/classes', async (req, res) => {
-            const result = await classCollection.find().toArray();
+            const page = parseInt(req.query.page)
+            const size = parseInt(req.query.size)
+            const result = await classCollection.find()
+                .skip(page * size)
+                .limit(size)
+                .toArray();
             res.send(result)
+        });
+        app.get('/classesCount', async (req, res) => {
+            const count = await classCollection.estimatedDocumentCount()
+            console.log(count);
+            res.send({ count })
         });
         // view a class
         app.get('/classes/:id', async (req, res) => {
@@ -267,18 +277,18 @@ async function run() {
         // form Related API
         // view all forms
         app.get('/forms', async (req, res) => {
-            const page = parseInt(req.query.page)
-            const size = parseInt(req.query.size)
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
             const result = await formCollection.find()
                 .skip(page * size)
                 .limit(size)
                 .toArray();
             res.send(result);
         });
+        // count of all forms
         app.get('/formsCount', async (req, res) => {
-            const count = await formCollection.estimatedDocumentCount()
-            console.log(count);
-            res.send({ count })
+            const count = await formCollection.countDocuments();
+            res.json({ count });
         });
         // view a form
         app.get('/forms/:id', async (req, res) => {
