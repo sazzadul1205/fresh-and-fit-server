@@ -44,7 +44,6 @@ async function run() {
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
             res.send({ token })
         });
-
         // verification middle ware
         const verifyToken = (req, res, next) => {
             console.log('inside the verify Token', req.headers.authorization);
@@ -196,6 +195,13 @@ async function run() {
             const result = await nTrainerRequestCollection.find().toArray();
             res.send(result)
         });
+        // view a newTrainer
+        app.get('/nTrainerRequest/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await nTrainerRequestCollection.findOne(query)
+            res.send(result)
+        });
         // add new trainerReq item
         app.post('/nTrainerRequest', async (req, res) => {
             const request = req.body;
@@ -243,6 +249,13 @@ async function run() {
             const result = await bookingCollection.insertOne(request);
             res.send(result)
         });
+        // delete trainerReq
+        app.delete('/bookings/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await bookingCollection.deleteOne(query)
+            res.send(result)
+        });
 
         // classes Related API
         // view all classes
@@ -257,7 +270,6 @@ async function run() {
         });
         app.get('/classesCount', async (req, res) => {
             const count = await classCollection.estimatedDocumentCount()
-            console.log(count);
             res.send({ count })
         });
         // view a class
