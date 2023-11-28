@@ -37,6 +37,7 @@ async function run() {
         const newsLetterCollection = client.db('fnfDB').collection('newsLetter');
         const payedCollection = client.db('fnfDB').collection('payed');
         const testimonialsCollection = client.db('fnfDB').collection('testimonials');
+        const classesJoinedCollection = client.db('fnfDB').collection('classesJoined');
 
         // JWT Related API verification
         app.post('/jwt', async (req, res) => {
@@ -260,7 +261,7 @@ async function run() {
             res.send(result)
         });
         // add new booking
-        app.post('/bookings', verifyToken, async (req, res) => {
+        app.post('/bookings', async (req, res) => {
             const request = req.body;
             const result = await bookingCollection.insertOne(request);
             res.send(result)
@@ -299,6 +300,56 @@ async function run() {
         app.post('/classes', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await classCollection.insertOne(request);
+            res.send(result)
+        });
+        // Update trainer
+        app.patch('/classes/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const existingClass = await classCollection.findOne(filter);
+            if (!existingClass) {
+                return res.status(404).json({ error: 'Class not found' });
+            }
+            const updatedMemberCount = existingClass.memberCount + 1;
+            const updateDocument = {
+                $set: {
+                    memberCount: updatedMemberCount,
+                },
+            };
+            const result = await classCollection.updateOne(filter, updateDocument);
+            if (result.modifiedCount === 1) {
+                res.json({ success: true, updatedMemberCount });
+            } else {
+                res.status(500).json({ error: 'Failed to update class member count' });
+            }
+        });
+
+        // ClassesJoined Related API
+        // view all classes
+        app.get('/classesJoined', async (req, res) => {
+            const { email } = req.query;
+            if (email) {
+                // If email is provided, find a specific user by email
+                const query = { email };
+                const result = await classesJoinedCollection.findOne(query);
+                res.send(result);
+            } else {
+                // If email is not provided, find all users
+                const result = await classesJoinedCollection.find().toArray();
+                res.send(result);
+            }
+        });
+        // view a class
+        app.get('/classesJoined/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await classesJoinedCollection.findOne(query)
+            res.send(result)
+        });
+        // add new class
+        app.post('/classesJoined', async (req, res) => {
+            const request = req.body;
+            const result = await classesJoinedCollection.insertOne(request);
             res.send(result)
         });
 
