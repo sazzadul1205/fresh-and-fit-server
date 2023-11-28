@@ -73,7 +73,7 @@ async function run() {
         }
 
         // Admin Call
-        app.get('/adminBalances', async (req, res) => {
+        app.get('/adminBalances', verifyToken, verifyAdmin, async (req, res) => {
             const trainerPayed = await payedCollection.aggregate([
                 {
                     $group: {
@@ -163,7 +163,7 @@ async function run() {
             res.send(result)
         });
         // add new trainer item
-        app.post('/trainers', async (req, res) => {
+        app.post('/trainers',verifyToken, verifyAdmin, async (req, res) => {
             const request = req.body;
             const result = await trainerCollection.insertOne(request);
             res.send(result)
@@ -203,13 +203,13 @@ async function run() {
             res.send(result)
         });
         // add new trainerReq item
-        app.post('/nTrainerRequest', async (req, res) => {
+        app.post('/nTrainerRequest', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await nTrainerRequestCollection.insertOne(request);
             res.send(result)
         });
         // delete trainerReq
-        app.delete('/nTrainerRequest/:id', async (req, res) => {
+        app.delete('/nTrainerRequest/:id', verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await nTrainerRequestCollection.deleteOne(query)
@@ -244,13 +244,13 @@ async function run() {
             res.send(result)
         });
         // add new booking
-        app.post('/bookings', async (req, res) => {
+        app.post('/bookings', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await bookingCollection.insertOne(request);
             res.send(result)
         });
         // delete trainerReq
-        app.delete('/bookings/:id', async (req, res) => {
+        app.delete('/bookings/:id', verifyToken, async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await bookingCollection.deleteOne(query)
@@ -280,7 +280,7 @@ async function run() {
             res.send(result)
         });
         // add new class
-        app.post('/classes', async (req, res) => {
+        app.post('/classes',verifyToken, async (req, res) => {
             const request = req.body;
             const result = await classCollection.insertOne(request);
             res.send(result)
@@ -310,7 +310,7 @@ async function run() {
             res.send(result)
         });
         // add new form
-        app.post('/forms', async (req, res) => {
+        app.post('/forms', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await formCollection.insertOne(request);
             res.send(result)
@@ -326,9 +326,8 @@ async function run() {
             const result = await newsLetterCollection.estimatedDocumentCount();
             res.send({ result })
         });
-
         // add new subscribers
-        app.post('/newsLetter', async (req, res) => {
+        app.post('/newsLetter', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await newsLetterCollection.insertOne(request);
             res.send(result)
@@ -337,12 +336,12 @@ async function run() {
 
         //newsLetter Related API
         // view all classes
-        app.get('/payed', async (req, res) => {
+        app.get('/payed', verifyToken, verifyAdmin, async (req, res) => {
             const result = await payedCollection.find().toArray();
             res.send(result)
         });
         // add new form
-        app.post('/payed', async (req, res) => {
+        app.post('/payed', verifyToken, verifyAdmin, async (req, res) => {
             const request = req.body;
             const result = await payedCollection.insertOne(request);
             res.send(result)
@@ -355,7 +354,7 @@ async function run() {
             res.send(result)
         });
         // add new form
-        app.post('/testimonials', async (req, res) => {
+        app.post('/testimonials', verifyToken, async (req, res) => {
             const request = req.body;
             const result = await testimonialsCollection.insertOne(request);
             res.send(result)
