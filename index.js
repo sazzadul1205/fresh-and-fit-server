@@ -331,7 +331,7 @@ async function run() {
             if (email) {
                 // If email is provided, find a specific user by email
                 const query = { email };
-                const result = await classesJoinedCollection.findOne(query);
+                const result = await classesJoinedCollection.find(query).toArray();
                 res.send(result);
             } else {
                 // If email is not provided, find all users
