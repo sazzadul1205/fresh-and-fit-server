@@ -7,7 +7,15 @@ require('dotenv').config()
 const port = process.env.PORT || 5000;
 
 // Middle Ware
-app.use(cors());
+app.use(cors({
+    origin: [
+        'http://localhost:5173',
+        'https://fresh-and-fit-c2dc3.web.app',
+        'https://fresh-and-fit-c2dc3.firebaseapp.com'
+    ],
+    credentials: true
+}))
+
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@fnfdb.nqwaka8.mongodb.net/?retryWrites=true&w=majority`;
@@ -24,7 +32,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         // Collections 
         const userCollection = client.db('fnfDB').collection('users');
@@ -399,7 +407,6 @@ async function run() {
             const result = await newsLetterCollection.insertOne(request);
             res.send(result)
         });
-
 
         //newsLetter Related API
         // view all classes
